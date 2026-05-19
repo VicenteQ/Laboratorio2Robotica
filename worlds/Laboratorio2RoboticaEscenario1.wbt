@@ -15,7 +15,7 @@ Viewpoint {
 E-puck {
   translation 0.35 0.415926 0.00047777
   rotation 0.0005762888491828189 0.0005762919660909642 -0.9999996678893109 1.5707957227927294
-  controller "my_controller"
+  controller "controlEscenario1"
 }
 TexturedBackground {
 }
