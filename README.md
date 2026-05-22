@@ -83,7 +83,7 @@ El algoritmo opera iterativamente en dos etapas:
 
 $$\hat{d}_{k}^{-} = \hat{d}_{k-1} - \Delta s$$
 
-Luego se actualiza la covarianza a priori sumando el ruido del proceso:
+* Luego se actualiza la covarianza a priori sumando el ruido del proceso:
 
 $$P_{k}^{-} = P_{k-1} + Q$$
 
@@ -91,11 +91,13 @@ $$P_{k}^{-} = P_{k-1} + Q$$
 
 $$K_{k} = \frac{P_{k}^{-}}{P_{k}^{-} + R}$$
 
-Luego se calcula la estimación final actualizada de la distancia:
+* Luego se calcula la estimación final actualizada de la distancia:
 
 $$\hat{d}_{k} = \hat{d}_{k}^{-} + K_{k}(z_{k} - \hat{d}_{k}^{-})$$
 
-Y por último, se actualiza la covarianza del error, preparándola para el siguiente ciclo:
+* Y por último, se actualiza la covarianza del error, preparándola para el siguiente ciclo:
 
 $$P_{k} = (1 - K_{k}) P_{k}^{-}$$
+
+
 
