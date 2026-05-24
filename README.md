@@ -132,5 +132,41 @@ $$\hat{d}_{k} = \hat{d}_{k}^{-} + K_{k}(z_{k} - \hat{d}_{k}^{-})$$
 
 $$P_{k} = (1 - K_{k}) P_{k}^{-}$$
 
+## Lógica de Navegación Reactiva
+
+El comportamiento autónomo del robot se rige por un esquema de control reactivo basado en un umbral de seguridad, utilizando la distancia frontal estimada por el filtro de Kalman (d_estimada) como variable principal de decisión. Se estableció un umbral de seguridad estricto de 0.06 metros. Adicionalmente, se implementó un periodo de gracia inicial de 0.5 segundos de simulación donde el robot avanza ciegamente. Esto evita falsos positivos causados por lecturas basura de los sensores infrarrojos al inicializarse.
+
+### Regla de Decisión Base:
+
+**Estado AVANZANDO:** Mientras la distancia estimada se mantenga por sobre los 0.06 metros, los motores izquierdo y derecho reciben la instrucción de avanzar en línea recta a su velocidad máxima (3.14 rad/s).
+
+**Estado GIRANDO:** Si la distancia frontal estimada cae por debajo del umbral de 0.06 metros, el robot detiene su avance lineal y entra en un estado de giro durante 30 iteraciones continuas de control (contador_giro = 30).
+
+Para optimizar el rendimiento según la complejidad del entorno, la lógica de decisión de giro se adaptó para cada escenario:
+
+**Estrategia en Entorno Simple (Escenario 1):** Al detectar un obstáculo frontal, el robot evalúa dinámicamente sus sensores laterales en cada iteración del giro. Si el sensor lateral izquierdo detecta mayor espacio libre (lectura mayor al sensor derecho por un margen de 50), el robot rota sobre su propio eje hacia la derecha, y viceversa.
+
+**Estrategia con Memoria en Entorno Complejo (Escenario 2):** En los pasillos estrechos, la evaluación dinámica causaba oscilaciones o titubeos. Para solucionarlo, se introdujo una "memoria de dirección" (direccion_giro). Al entrar al estado de giro, el robot evalúa los sensores laterales una única vez y fija el sentido de la rotación (con prioridad por defecto hacia la derecha). Durante las siguientes 30 iteraciones, ejecuta el giro ciegamente hacia la dirección memorizada, permitiendo giros limpios y escape eficiente de las esquinas.
+
+
+## Resultados Obtenidos en los Escenarios de Prueba
+### Escenario 1: Entorno Simple
+El primer entorno de validación consistió en una arena delimitada de tipo cuadrícula con una baja densidad de obstáculos (representados por dos cajas de madera aisladas). En este escenario, el robot presentó un desempeño sólido y consistente:
+
+**Estabilidad y Evasión:** El e-puck logró mantener la estabilidad del movimiento en todo momento. Detectó las cajas con suficiente antelación gracias al umbral de seguridad de 0.06 metros, demostrando una alta capacidad para evitar colisiones frontales.
+
+**Toma de Decisiones:** La estrategia de control dinámico funcionó de manera óptima. Al tener espacios amplios, el robot pudo evaluar sus sensores laterales iteración a iteración y ejecutar giros fluidos hacia las zonas despejadas, reduciendo al mínimo la cantidad de giros innecesarios o erráticos.
+
+**Impacto de la Fusión Sensorial:** Al observar el comportamiento y los datos exportados, se evidenciaron diferencias claras entre el uso de mediciones crudas y la distancia estimada con fusión sensorial. El filtro de Kalman evitó que el robot reaccionara prematuramente a posibles picos de ruido (como variaciones por la iluminación o sombras del entorno), manteniendo una trayectoria de avance lineal mucho más limpia.
+
+### Escenario 2: Entorno Complejo (Pasillos)
+El segundo entorno incrementó significativamente la dificultad al presentar una alta densidad de obstáculos que conformaban un circuito de pasillos estrechos y esquinas cerradas. En este contexto, el desempeño del controlador y la lógica adaptada fueron evaluados detalladamente:
+
+**Estabilidad y Evasión:** A pesar de lo angosto de los corredores, el e-puck demostró una excelente capacidad para evitar colisiones. El umbral de seguridad de 0.06 metros resultó ser la distancia justa para frenar a tiempo sin quedar atrapado contra los bloques de madera.
+
+**Toma de Decisiones y Reducción de Giros:** La principal mejora en este escenario fue la drástica reducción de giros innecesarios u oscilaciones. En un pasillo, un controlador puramente dinámico suele "titubear" al leer paredes a ambos lados. Gracias a la implementación de la "memoria de dirección", una vez que el robot detectaba un bloqueo frontal, tomaba una decisión firme (priorizando la derecha) y ejecutaba un giro limpio de 30 iteraciones continuas, permitiéndole escapar de las esquinas estrechas de manera eficiente y estable.
+
+**Impacto de la Fusión Sensorial:** En este entorno cerrado, el ruido de los sensores por rebotes infrarrojos en las paredes cercanas era mucho mayor. Aquí, la diferencia entre usar mediciones crudas y fusionadas fue vital. El filtro de Kalman garantizó que el robot solo reaccionara ante un obstáculo real en su frente, ignorando fluctuaciones menores y permitiendo un avance rectilíneo seguro por el centro del pasillo.ro del pasillo.
+
 
 
