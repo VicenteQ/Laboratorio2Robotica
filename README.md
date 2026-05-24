@@ -4,11 +4,11 @@
 - Vicente Nills Quezada
 - Yamil Soleman Fernandez
 - Sebastián García Valdebenito
-- Ignacio Matus de la Parra
+- Ignacio Matus de la Parra Rodríguez
 - Vicente Aburto Falcón
 
 ## **Asignatura**
-- ICI4150-2
+- Robótica y Sistemas Autónomos (ICI4150-2)
 
 ---
 ## **Objetivos del Trabajo**
@@ -30,7 +30,6 @@ El objetivo de laboratorio es implementar un sistema básico de navegación reac
 **Validación en Entornos de Prueba:** Evaluar el desempeño del controlador reactivo diseñado mediante la implementación de dos escenarios diferenciados en Webots: un entorno simple con baja densidad de obstáculos y un entorno complejo compuesto por pasillos estrechos.
 
 **Análisis Comparativo de Señales:** Analizar la estabilidad del movimiento, la reducción de giros innecesarios y la tasa de prevención de colisiones del robot al contrastar el uso de lecturas crudas, señales filtradas por media móvil y la distancia estimada mediante fusión sensorial.
-
 
 ## Descripción del robot y sensores utilizados
 
@@ -57,7 +56,6 @@ A continuación, se detallan las variables de muestreo utilizadas de manera idé
 | **Frecuencia de Muestreo ($f_s$)** | `31.25` | Hertz (Hz) | Tasa de refresco del procesamiento digital, calculada mediante la relación formal matemática: $f_s = \frac{1}{T_s}$. |
 | **Total de Muestras Registradas** | `5.926` | Muestras | Cantidad total de estados discretos exportados al archivo CSV durante el recorrido completo del robot. |
 
-
 ### Gráficos de Señales Comparativas (Cruda vs. Filtrada vs. Kalman)
 
 Utilizando los datos analíticos recolectados, se generaron las curvas continuas de distancia métrica con el propósito de evaluar el comportamiento del ruido electrónico del sensor frontal y el rendimiento de mitigación de los algoritmos implementados.
@@ -65,14 +63,12 @@ Utilizando los datos analíticos recolectados, se generaron las curvas continuas
 #### Escenario 1: Entorno Simple
 ![Análisis de Señales - Escenario 1](grafico_escenario1.png)
 
-
 #### Escenario 2: Entorno Complejo (Pasillos)
 ![Análisis de Señales - Escenario 2](grafico_escenario2.png)
 
 ## **Marco Teórico y Fórmulas Matemáticas**
 
 ### Estimación del Avance mediante Encoders
-
 Para estimar el desplazamiento lineal del robot a partir del giro de sus ruedas, nos basamos en la relación geométrica fundamental entre el despalzamiento angular y el lineal. Teniendo en cuenta que los encoders del robot e-puck registran el giro en radianes y que el radio de sus ruedas configurado en el controlador es de $0.0205 m$, la conversión se define mediante la siguiente ecuanción:
 
 $$s = r\theta$$
@@ -89,7 +85,6 @@ $$\Delta s = r (\theta_{k} - \theta_{k-1})$$
 Este delta de desplazamiento ($\Delta s$) es la base para predecir cómo cambia la distancia hacia un obstáculo frontal.
 
 ### Filtro Simple: Media Móvil
-
 Los sensores infrarrojos de proximidad tienen ruido e incertidumbre inherente en sus lecturas. Para estabilizar la señal antes de tomar decisiones reactivas, implementamos un filtro de media móvil (Simple Moving Average - SMA).
 
 Conceptualemente hablando, este filtro funciona almacenando las lecturas recientes en un buffer de memoria y calculando su promedio. En nuestro controlador, decidimos optar por una ventana de 5 muestras. Esta cantidad de muestras ofrece un equilibrio ideal, donde es lo suficientemente grande para suavizar las fluctuaciones de alta frecuencia (ruido), pero lo suficientemente pequeña para no introducir un desfase de tiempo crítico que provoque colisiones tardías.
@@ -137,7 +132,6 @@ $$P_{k} = (1 - K_{k}) P_{k}^{-}$$
 El comportamiento autónomo del robot se rige por un esquema de control reactivo basado en un umbral de seguridad, utilizando la distancia frontal estimada por el filtro de Kalman (d_estimada) como variable principal de decisión. Se estableció un umbral de seguridad estricto de 0.06 metros. Adicionalmente, se implementó un periodo de gracia inicial de 0.5 segundos de simulación donde el robot avanza ciegamente. Esto evita falsos positivos causados por lecturas basura de los sensores infrarrojos al inicializarse.
 
 ### Regla de Decisión Base:
-
 **Estado AVANZANDO:** Mientras la distancia estimada se mantenga por sobre los 0.06 metros, los motores izquierdo y derecho reciben la instrucción de avanzar en línea recta a su velocidad máxima (3.14 rad/s).
 
 **Estado GIRANDO:** Si la distancia frontal estimada cae por debajo del umbral de 0.06 metros, el robot detiene su avance lineal y entra en un estado de giro durante 30 iteraciones continuas de control (contador_giro = 30).
@@ -148,6 +142,23 @@ Para optimizar el rendimiento según la complejidad del entorno, la lógica de d
 
 **Estrategia con Memoria en Entorno Complejo (Escenario 2):** En los pasillos estrechos, la evaluación dinámica causaba oscilaciones o titubeos. Para solucionarlo, se introdujo una "memoria de dirección" (direccion_giro). Al entrar al estado de giro, el robot evalúa los sensores laterales una única vez y fija el sentido de la rotación (con prioridad por defecto hacia la derecha). Durante las siguientes 30 iteraciones, ejecuta el giro ciegamente hacia la dirección memorizada, permitiendo giros limpios y escape eficiente de las esquinas.
 
+## **Análisis de Resultados y Comportamiento**
+
+### Análisis Comparativo de Señales
+Al observar los gráficos generados para ambos escenarios, se evidencia claramente la ventaja de la fusión sensorial sobre las mediciones directas. La lectura cruda del sensor infrarrojo presenta un alto nivel de ruido de alta frecuencia, manifestándose en caídas bruscas (falsos positivos de proximidad) que harían que el robot frene o gire de forma errática. 
+
+El Filtro de Media Móvil (ventana de 5 muestras) logra suavizar la señal y atenuar el ruido, pero aún es susceptible a los picos más pronunciados, presentando además un ligero desfase temporal respecto a la lectura original. Por el contrario, la estimación del Filtro de Kalman demuestra un comportamiento sumamente estable. Al confiar en la predicción del modelo cinemático (encoders) y utilizar las mediciones de los sensores solo como corrección ponderada, Kalman logra filtrar exitosamente las caídas abruptas de los sensores frontales. Esto entrega a la lógica de control una variable de estado mucho más limpia y continua, evitando que el robot reaccione a falsos obstáculos.
+
+### Análisis de Escenarios (Complejidad y Colisiones)
+El controlador fue sometido a dos entornos de prueba con distintos niveles de exigencia espacial:
+* **Escenario 1 (Entorno Simple):** El robot logró una navegación estable, identificando correctamente los obstáculos frontales y reaccionando a tiempo gracias a la estimación de distancia. No se registraron colisiones y el movimiento fue fluido en espacios abiertos.
+* **Escenario 2 (Entorno Complejo):** En presencia de pasillos estrechos y múltiples obstáculos, la exigencia sobre los sensores laterales aumentó. A pesar de la cercanía constante con las paredes, la estimación robusta de Kalman permitió mantener el umbral de seguridad, logrando evadir esquinas difíciles sin chocar.
+
+### Análisis de Giros Innecesarios y Memoria de Dirección
+Una mejora fundamental implementada en el Escenario 2 fue la incorporación de la variable `direccion_giro` actuando como una memoria de estado. En la lógica inicial (Escenario 1), la decisión de girar a la izquierda o derecha se evaluaba continuamente durante el ciclo de evasión revisando los sensores laterales. Esto provocaba que, en espacios estrechos, los valores de los sensores fluctuaran en medio del giro, haciendo que el robot cambiara de decisión constantemente y quedara atrapado en un bucle de oscilación (moviéndose de izquierda a derecha sin avanzar).
+
+Al implementar la memoria de dirección, la lógica reactiva evalúa el entorno y toma la decisión de giro una única vez cuando detecta el obstáculo. Esta dirección se guarda y se ejecuta de forma ininterrumpida durante los 30 pasos del ciclo de evasión (`contador_giro`). Este enfoque de maniobra eliminó por completo las oscilaciones, permitiendo que el robot sorteara esquinas complejas de manera decisiva y eficiente.
+
 ## **Análisis Final y Conclusiones**
 
 El desarrollo de este laboratorio permitió demostrar los desafíos inherentes a la percepción y actuación en la robótica móvil. A partir de los resultados obtenidos en ambos escenarios de simulación, como grupo consolidamos las siguientes conclusiones fundamentales:
@@ -156,7 +167,6 @@ El desarrollo de este laboratorio permitió demostrar los desafíos inherentes a
 * **El impacto crítico del Filtro de Kalman:** La implementación de la fusión sensorial probó ser la solución más robusta frente a la incertidumbre. Al combinar la predicción cinemática (calculada mediante la odometría de los encoders) con la medición del entorno (suavizada previamente por la media móvil), el filtro logró estimar el estado real del robot con gran precisión. Cuando el avance era incierto, la lectura del entorno corregía la trayectoria.
 * **Sinergia entre Percepción y Lógica de Control:** Obtener una señal limpia es inútil si la lógica de decisión no es la adecuada. La adición de una "memoria de dirección" en el escenario 2 para anular el titubeo del robot en los pasillos estrechos demostró que el diseño algorítmico debe adaptarse a la complejidad espacial del entorno, a diferencia del escenario 1 que cuenta con un entorno más simple.
 * **Reflexión General:** La experiencia práctica subraya que, en el desarrollo de sistemas autónomos, el hardware por sí solo nunca entregará una representación perfecta de la realidad. Es la aplicación de modelos matemáticos y estadísticos lo que permite transformar señales imperfectas en datos confiables, logrando así construir controladores tolerantes a fallos y verdaderamente autónomos.
-
 
 ## **Instrucciones para Ejecutar la Simulación**
 
