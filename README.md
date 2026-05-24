@@ -148,25 +148,31 @@ Para optimizar el rendimiento según la complejidad del entorno, la lógica de d
 
 **Estrategia con Memoria en Entorno Complejo (Escenario 2):** En los pasillos estrechos, la evaluación dinámica causaba oscilaciones o titubeos. Para solucionarlo, se introdujo una "memoria de dirección" (direccion_giro). Al entrar al estado de giro, el robot evalúa los sensores laterales una única vez y fija el sentido de la rotación (con prioridad por defecto hacia la derecha). Durante las siguientes 30 iteraciones, ejecuta el giro ciegamente hacia la dirección memorizada, permitiendo giros limpios y escape eficiente de las esquinas.
 
+## **Análisis Final y Conclusiones**
 
-## Resultados Obtenidos en los Escenarios de Prueba
-### Escenario 1: Entorno Simple
-El primer entorno de validación consistió en una arena delimitada de tipo cuadrícula con una baja densidad de obstáculos (representados por dos cajas de madera aisladas). En este escenario, el robot presentó un desempeño sólido y consistente:
+El desarrollo de este laboratorio permitió demostrar los desafíos inherentes a la percepción y actuación en la robótica móvil. A partir de los resultados obtenidos en ambos escenarios de simulación, como grupo consolidamos las siguientes conclusiones fundamentales:
 
-**Estabilidad y Evasión:** El e-puck logró mantener la estabilidad del movimiento en todo momento. Detectó las cajas con suficiente antelación gracias al umbral de seguridad de 0.06 metros, demostrando una alta capacidad para evitar colisiones frontales.
-
-**Toma de Decisiones:** La estrategia de control dinámico funcionó de manera óptima. Al tener espacios amplios, el robot pudo evaluar sus sensores laterales iteración a iteración y ejecutar giros fluidos hacia las zonas despejadas, reduciendo al mínimo la cantidad de giros innecesarios o erráticos.
-
-**Impacto de la Fusión Sensorial:** Al observar el comportamiento y los datos exportados, se evidenciaron diferencias claras entre el uso de mediciones crudas y la distancia estimada con fusión sensorial. El filtro de Kalman evitó que el robot reaccionara prematuramente a posibles picos de ruido (como variaciones por la iluminación o sombras del entorno), manteniendo una trayectoria de avance lineal mucho más limpia.
-
-### Escenario 2: Entorno Complejo (Pasillos)
-El segundo entorno incrementó significativamente la dificultad al presentar una alta densidad de obstáculos que conformaban un circuito de pasillos estrechos y esquinas cerradas. En este contexto, el desempeño del controlador y la lógica adaptada fueron evaluados detalladamente:
-
-**Estabilidad y Evasión:** A pesar de lo angosto de los corredores, el e-puck demostró una excelente capacidad para evitar colisiones. El umbral de seguridad de 0.06 metros resultó ser la distancia justa para frenar a tiempo sin quedar atrapado contra los bloques de madera.
-
-**Toma de Decisiones y Reducción de Giros:** La principal mejora en este escenario fue la drástica reducción de giros innecesarios u oscilaciones. En un pasillo, un controlador puramente dinámico suele "titubear" al leer paredes a ambos lados. Gracias a la implementación de la "memoria de dirección", una vez que el robot detectaba un bloqueo frontal, tomaba una decisión firme (priorizando la derecha) y ejecutaba un giro limpio de 30 iteraciones continuas, permitiéndole escapar de las esquinas estrechas de manera eficiente y estable.
-
-**Impacto de la Fusión Sensorial:** En este entorno cerrado, el ruido de los sensores por rebotes infrarrojos en las paredes cercanas era mucho mayor. Aquí, la diferencia entre usar mediciones crudas y fusionadas fue vital. El filtro de Kalman garantizó que el robot solo reaccionara ante un obstáculo real en su frente, ignorando fluctuaciones menores y permitiendo un avance rectilíneo seguro por el centro del pasillo.ro del pasillo.
+* **La insuficiencia de las mediciones crudas:** Confiar únicamente en las lecturas directas de los sensores infrarrojos resulta inviable para una navegación autónoma segura. El "ruido", las variaciones del entorno y los falsos rebotes generan "picos" de error que, al estar acoplados directamente a los actuadores, provocan un comportamiento errático, oscilaciones y colisiones inminentes.
+* **El impacto crítico del Filtro de Kalman:** La implementación de la fusión sensorial probó ser la solución más robusta frente a la incertidumbre. Al combinar la predicción cinemática (calculada mediante la odometría de los encoders) con la medición del entorno (suavizada previamente por la media móvil), el filtro logró estimar el estado real del robot con gran precisión. Cuando el avance era incierto, la lectura del entorno corregía la trayectoria.
+* **Sinergia entre Percepción y Lógica de Control:** Obtener una señal limpia es inútil si la lógica de decisión no es la adecuada. La adición de una "memoria de dirección" en el escenario 2 para anular el titubeo del robot en los pasillos estrechos demostró que el diseño algorítmico debe adaptarse a la complejidad espacial del entorno, a diferencia del escenario 1 que cuenta con un entorno más simple.
+* **Reflexión General:** La experiencia práctica subraya que, en el desarrollo de sistemas autónomos, el hardware por sí solo nunca entregará una representación perfecta de la realidad. Es la aplicación de modelos matemáticos y estadísticos lo que permite transformar señales imperfectas en datos confiables, logrando así construir controladores tolerantes a fallos y verdaderamente autónomos.
 
 
+## **Instrucciones para Ejecutar la Simulación**
+
+1. **Abrir el escenario:** Inicie Webots y abra el archivo del mundo (`.wbt`) correspondiente al escenario que desea evaluar:
+   * Laboratorio2RoboticaEscenario1 para el entorno Simple.
+   * Laboratorio2RoboticaEscenario2 para el entorno Complejo.
+
+2. **Localizar el robot:** En el árbol de escena (Scene Tree) ubicado en el panel izquierdo de la interfaz, busque y despliegue el nodo del robot llamado **`E-puck`**.
+
+3. **Configurar el controlador:** Dentro de los campos y propiedades del robot, busque el parámetro **`controller`**.
+
+4. **Seleccionar el script:** Haga clic en el botón "Select..." y elija el script correspondiente según el mundo cargado:
+   * Para el Entorno Simple, seleccione: `controlEscenario1.py`
+   * Para el Entorno Complejo, seleccione: `controlEscenario2.py`
+
+5. **Reiniciar la simulación:** Presione el botón de **Reset** en la barra de herramientas superior de Webots para asegurar la sincronización y limpieza del reloj interno.
+
+7. **Iniciar la simulación:** Presione el botón de **Play** o **Step** para comenzar la simulación. En la ventana de la consola integrada podrá visualizar en tiempo real si el robot está en estado "AVANZANDO" o "GIRANDO", junto con los valores del promedio crudo y la distancia estimada final por el filtro de Kalman.
 
