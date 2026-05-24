@@ -3,7 +3,7 @@
 ## **Integrantes:**
 - Vicente Nills Quezada
 - Yamil Soleman Fernandez
-- Sebastián García V
+- Sebastián García Valdebenito
 - Ignacio Matus de la Parra
 - Vicente Aburto Falcón
 
@@ -38,8 +38,11 @@ Para el desarrollo del laboratorio se hizo uso del robot móvil diferencial **e-
 El sistema saca provecho de las dos ruedas motrices independientes y del conjunto de hardware mínimo obligatorio mediante la siguiente distribución física:
 
 **Actuadores de Tracción:** El movimiento se controla de manera diferencial empleando dos motores independientes acoplados a sus respectivas ruedas motrices (`left wheel motor` y `right wheel motor`).
+
 **Sensores de Distancia Frontales (`ps7` y `ps0`):** Se utilizan dos sensores infrarrojos frontales de distancia encargados de medir la proximidad de obstáculos directamente al frente del robot para mitigar colisiones.
+
 **Sensores de Distancia Laterales (`ps5` y `ps2`):** Se habilitaron un sensor lateral izquierdo (`ps5`) y un sensor lateral derecho (`ps2`) para la detección de obstáculos en el entorno. Sus lecturas alimentan la lógica reactiva de evasión, permitiendo decidir el sentido del giro cuando el camino frontal está bloqueado.
+
 **Sensores de Posición Angular (Encoders):** Se emplean el encoder de la rueda izquierda y el encoder de la rueda derecha (`left wheel sensor` y `right wheel sensor`) para medir el giro de las ruedas en radianes. Estas lecturas permiten estimar el desplazamiento lineal acumulado y calcular el avance neto del robot ($\Delta s$), representando la etapa de predicción cinemática del filtro.
 
 ## **Parámetros de Muestreo y Registro de Datos**
