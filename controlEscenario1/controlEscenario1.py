@@ -47,7 +47,6 @@ writer = csv.writer(archivo_csv)
 writer.writerow(['Tiempo_s', 'Cruda_m', 'Filtrada_m', 'Kalman_m'])
 tiempo_simulacion = 0.0
 
-# 6. Ciclo Principal
 while robot.step(TIME_STEP) != -1:
     
     # --- 1. ESTIMACIÓN DE AVANCE (ENCODERS) ---
@@ -91,7 +90,6 @@ while robot.step(TIME_STEP) != -1:
     # --- 4. NAVEGACIÓN REACTIVA ---
     UMBRAL_SEGURIDAD = 0.06  
     
-    # NUEVO: Periodo de gracia para ignorar la "basura" inicial de los sensores
     if tiempo_simulacion < 0.5:
         motor_izquierdo.setVelocity(VELOCIDAD_MAX)
         motor_derecho.setVelocity(VELOCIDAD_MAX)
