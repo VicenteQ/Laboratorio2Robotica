@@ -30,8 +30,17 @@ El objetivo de laboratorio es implementar un sistema básico de navegación reac
 **Validación en Entornos de Prueba:** Evaluar el desempeño del controlador reactivo diseñado mediante la implementación de dos escenarios diferenciados en Webots: un entorno simple con baja densidad de obstáculos y un entorno complejo compuesto por pasillos estrechos.
 
 **Análisis Comparativo de Señales:** Analizar la estabilidad del movimiento, la reducción de giros innecesarios y la tasa de prevención de colisiones del robot al contrastar el uso de lecturas crudas, señales filtradas por media móvil y la distancia estimada mediante fusión sensorial.
+
+
 ## Descripción del robot y sensores utilizados
 
+Para el desarrollo del laboratorio se hizo uso del robot móvil diferencial **e-puck** integrado en la plataforma Webots. Al emplear este prototipo estandarizado, el chasis físico, los motores y la distribución de los componentes sensoriales ya se encuentran preconfigurados de forma nativa en la arquitectura del agente.
+El sistema saca provecho de las dos ruedas motrices independientes y del conjunto de hardware mínimo obligatorio mediante la siguiente distribución física:
+
+**Actuadores de Tracción:** El movimiento se controla de manera diferencial empleando dos motores independientes acoplados a sus respectivas ruedas motrices (`left wheel motor` y `right wheel motor`).
+**Sensores de Distancia Frontales (`ps7` y `ps0`):** Se utilizan dos sensores infrarrojos frontales de distancia encargados de medir la proximidad de obstáculos directamente al frente del robot para mitigar colisiones.
+**Sensores de Distancia Laterales (`ps5` y `ps2`):** Se habilitaron un sensor lateral izquierdo (`ps5`) y un sensor lateral derecho (`ps2`) para la detección de obstáculos en el entorno. Sus lecturas alimentan la lógica reactiva de evasión, permitiendo decidir el sentido del giro cuando el camino frontal está bloqueado.
+**Sensores de Posición Angular (Encoders):** Se emplean el encoder de la rueda izquierda y el encoder de la rueda derecha (`left wheel sensor` y `right wheel sensor`) para medir el giro de las ruedas en radianes. Estas lecturas permiten estimar el desplazamiento lineal acumulado y calcular el avance neto del robot ($\Delta s$), representando la etapa de predicción cinemática del filtro.
 
 ## **Parámetros de Muestreo y Registro de Datos**
 
