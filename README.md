@@ -11,6 +11,27 @@
 - ICI4150-2
 
 ---
+## **Objetivos del Trabajo**
+
+El objetivo de laboratorio es implementar un sistema básico de navegación reactiva en el entorno de simulación Webots para un robot móvil diferencial. Esto se realizará utilizando sensores de distancia y encoders de rueda, aplicando técnicas de filtrado sobre las mediciones y empleando un algoritmo de fusión sensorial mediante un filtro de Kalman para estimar de forma robusta la distancia frontal a los obstáculos del entorno.
+
+### **Objetivos Específicos**
+
+**Registro y Adquisición de Datos:** Configurar y registrar las lecturas crudas de los sensores de distancia y de los encoders de las ruedas del robot durante la simulación bajo una frecuencia de muestreo fija y constante.
+
+**Estimación Cinemática:** Calcular el desplazamiento lineal y el avance iterativo del robot móvil a partir de las mediciones de posición angular en radianes entregadas por los encoders.
+
+**Mitigación de Ruido Primario:** Aplicar un filtro de media móvil simple (SMA) sobre las señales de los sensores frontales para reducir las fluctuaciones y la incertidumbre inherente de los componentes electrónicos.
+
+**Fusión Sensorial Avanzada:** Implementar un filtro de Kalman escalar estructurado explícitamente en sus fases de predicción (utilizando el avance estimado por encoders) y corrección (incorporando la lectura de los sensores frontales de distancia) para obtener una variable de proximidad estable.
+
+**Control y Navegación Reactiva:** Diseñar e integrar una lógica algorítmica de toma de decisiones que utilice la distancia frontal fusionada por el filtro de Kalman para determinar si el robot avanza o se detiene, apoyándose además en los sensores de proximidad laterales para evadir obstáculos decidiendo la dirección óptima del giro.
+
+**Validación en Entornos de Prueba:** Evaluar el desempeño del controlador reactivo diseñado mediante la implementación de dos escenarios diferenciados en Webots: un entorno simple con baja densidad de obstáculos y un entorno complejo compuesto por pasillos estrechos.
+
+**Análisis Comparativo de Señales:** Analizar la estabilidad del movimiento, la reducción de giros innecesarios y la tasa de prevención de colisiones del robot al contrastar el uso de lecturas crudas, señales filtradas por media móvil y la distancia estimada mediante fusión sensorial.
+## Descripción del robot y sensores utilizados
+
 
 ## **Parámetros de Muestreo y Registro de Datos**
 
