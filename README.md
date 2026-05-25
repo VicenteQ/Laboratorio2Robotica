@@ -54,7 +54,7 @@ A continuación, se detallan las variables de muestreo utilizadas de manera idé
 | :--- | :--- | :--- | :--- |
 | **Tiempo de Muestreo ($T_s$)** | `0.032` | Segundos (s) | Intervalo de tiempo discreto fijado por el paso básico de Webots (32 ms) entre iteraciones consecutivas del bucle de control. |
 | **Frecuencia de Muestreo ($f_s$)** | `31.25` | Hertz (Hz) | Tasa de refresco del procesamiento digital, calculada mediante la relación formal matemática: $f_s = \frac{1}{T_s}$. |
-| **Total de Muestras Registradas** | `5.926` | Muestras | Cantidad total de estados discretos exportados al archivo CSV durante el recorrido completo del robot. |
+| **Total de Muestras Registradas** | `10.034` | Muestras | Cantidad total de estados discretos exportados al archivo CSV durante el recorrido completo del robot. |
 
 ### Gráficos de Señales Comparativas (Cruda vs. Filtrada vs. Kalman)
 
